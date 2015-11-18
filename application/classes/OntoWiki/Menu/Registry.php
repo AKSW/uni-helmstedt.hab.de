@@ -121,7 +121,7 @@ class OntoWiki_Menu_Registry
     private function _getApplicationMenu($context = null)
     {
         $owApp = OntoWiki::getInstance();
-        
+
         // user sub menu
         if ($owApp->erfurt->isActionAllowed('RegisterNewUser')
             && !(isset($owApp->config->ac) && ((boolean)$owApp->config->ac->deactivateRegistration === true))
@@ -170,9 +170,8 @@ class OntoWiki_Menu_Registry
         $applicationMenu = new OntoWiki_Menu();
 
         // added by simi, 17.11.2015
-        // site extension menu
-        $siteMenu = new OntoWiki_Menu();
-        $applicationMenu->setEntry('<a href="'.$owApp->config->urlBase . 'catalogue'.'">Zum Katalog</a>', $siteMenu);
+        // to frontend catalogue
+        $applicationMenu->setEntry("Catalogue", $owApp->config->urlBase . 'catalogue');
 
         if (isset($userMenu)) {
             $applicationMenu->setEntry('User', $userMenu);
