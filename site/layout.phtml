@@ -101,13 +101,15 @@ $classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' =>
 						$navList = $this->navigationList($navOptions);
 						if ( !empty($navList) ) {
 							echo $navList;
-						} else { ?>
-						<nav>
-							<ul class="list-inline" >
-								<li class="active"><a href="<?php echo $this->urlBase ?>about">About the Project</a></li>
-								<li><a href="<?php echo $this->urlBase ?>catalogue">Katalog</a></li>
-							</ul>
-						</nav>
+						} else { 
+							// navi above doenst work with mysql ;(
+							?>
+							<nav>
+								<ul class="list-inline" >
+									<li class="active"><a href="<?php echo $this->urlBase ?>about">Über</a></li>
+									<li><a href="<?php echo $this->urlBase ?>catalogue">Katalog</a></li>
+								</ul>
+							</nav>
 						<?php } ?>
 					</div>
 
@@ -126,14 +128,13 @@ $classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' =>
 				Angemeldet als: <?php echo $owApp->getUser()->getUsername(); ?> | 
 				<a href="<?php echo $this->urlBase ?>application/logout">Abmelden</a>
 			</div>
-		
-		<?php } ?>
 
 			<div class="menu pull-right">
 				<a href="<?= $this->Url(array('uri' => $this->resourceUri, 'stayOnSite' => false)) ?>"><?= $this->_('Admin-Ansicht') ?></a>
 			</div>
-
 			<br />
+		
+		<?php } ?>			
 		
 
 		<div class="content">

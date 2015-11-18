@@ -85,13 +85,14 @@ Simple browser for OntoWiki SiteExnteions to browse through resources.
 			var _this = this;
 			var browser = $( '<div class="browser panel panel-default"></div>' );
 			var searchField = $('<form method="POST" id="search-form" style="display:inline"><input type="search" name="s" class="form-control browser-search pull-right" style="width:30%" placeholder="Suche ..."></form>');
+			searchField = $();
 
 			$(browser).append( $('<div class="panel-heading" style="height:55px"></div>').append(searchField) );
 			$(browser).append('<ul class="browser-list list-group"></ul>');
 			$(browser).append( $('<div class="panel-footer"></div>').append('<div class="browser-nav btn-group"></div><div class="browser-counter pull-right"></p>') );
 
 			_this.$elem.append( browser );
-			
+			/*
 			if ( _this.fetchAll ) {
 				searchField.keyup(function() {
 					_this.filteredList = _this.filter( $(this).val() );
@@ -117,6 +118,7 @@ Simple browser for OntoWiki SiteExnteions to browse through resources.
 					return false;
 				})
 			}
+			*/
 		},
 
 		printNewResBtn : function() {

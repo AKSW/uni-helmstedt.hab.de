@@ -1,12 +1,9 @@
-//var owCon = new OntoWikiConnection(urlBase + 'jsonrpc');
-//var urlBaseWebsafe = urlBase.replace(/[^a-z0-9-_.]/gi,'');
-
 // classes for search and browser
 var browserArg = {
 	"model" : [ "http://uni-helmstedt.hab.de/cph/" ],
 	"browse" : {
 		"Professoren" : {
-			
+			//		 removed because mysql ;(
 			/*"query" : "SELECT DISTINCT * WHERE { ?resourceUri rdf:type ?body . ?resourceUri rdfs:label ?label . " +
 				"OPTIONAL { ?resourceUri <http://uni-helmstedt.hab.de/cph/model/imageSource> ?image . } " +
 				"OPTIONAL { " +
@@ -14,11 +11,6 @@ var browserArg = {
 					"?resourceUri <http://uni-helmstedt.hab.de/cph/model/hasPeriod> ?death . ?death rdf:type <http://uni-helmstedt.hab.de/cph/model/Death> . ?death <http://uni-helmstedt.hab.de/cph/model/date> ?deathDate . ?death <http://uni-helmstedt.hab.de/cph/model/periodPlace> ?deathPlaceRes . ?deathPlaceRes rdfs:label ?deathPlace . " +
 				"} FILTER ( ?body = <http://uni-helmstedt.hab.de/cph/model/Professor> ) } ORDER BY ?label ?resourceUri",
 			*/
-			/*"query" : "SELECT DISTINCT * WHERE { ?resourceUri rdf:type <http://uni-helmstedt.hab.de/cph/model/Professor> . ?resourceUri rdfs:label ?label . " +
-				"OPTIONAL { ?resourceUri <http://uni-helmstedt.hab.de/cph/model/imageSource> ?image . } " +
-				"} LIMIT 15 ORDER BY ?label ?resourceUri",
-				*/
-			//"query" : "SELECT DISTINCT * WHERE { ?resourceUri rdf:type cphm:Academy . ?resourceUri rdfs:label ?label . }",
 			"classes" : ["http://uni-helmstedt.hab.de/cph/model/Professor"]
 		},
 		"Personen" : {
@@ -34,11 +26,19 @@ var browserArg = {
 };
 
 // Enable Browser to proflist
+
 if ( $("input.search-field").val() != "" ) {
-	console.log( $("input.search-field").val() );
-	var browse = browserArg['browse'];
-	var suche = { "Suche ..." : {"classes" : ["http://uni-helmstedt.hab.de/cph/model/Person"]} }
-	browserArg['browse'] = suche;
+	var s = $("input.search-field").val();
+	var browse = {};
+	browse["Suche '" + s + "'"] = {
+			"query" : "SELECT DISTINCT * WHERE { ?resourceUri rdf:type cphm:Professor . ?resourceUri rdfs:label ?label . FILTER regex(?label, '"+s+"', 'i') }",
+			"classes" : ["http://uni-helmstedt.hab.de/cph/model/Professor"]
+	};
+	browse = $.extend({}, browse, browserArg.browse );
+	browserArg = {
+		"model" : [ "http://uni-helmstedt.hab.de/cph/" ],
+		"browse" : browse
+	};
 }
 
 $(".browser").Browser( browserArg );
@@ -70,6 +70,8 @@ $.each( $(".extend-list"), function(n,i) {
 /*
 Autocomplete Search
 */
+// deactivated because mysql ;(
+/*
 // create custom autoconmplete item with resource uri as href
 $.widget("custom.autocompleteLinkItem", $.ui.autocomplete, {
 	_renderItem: function( ul, item ) {
@@ -184,3 +186,4 @@ $.each( $(".extend-list"), function(n,i) {
 	});
 
 });
+*/
