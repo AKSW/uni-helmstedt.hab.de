@@ -1,3 +1,9 @@
+# OntoWiki for Professorenkatalog Helmstedt #
+
+This version of OntoWiki fixes issues with MySQL backend and implements site templates for Helmstedt.
+
+The site template is configured for `http://uni-helmstedt.hab.de/cph/` as default host. 
+
 **Attention for composer users!**
 This version is not ready for use with composer, currently it is only the `feature/php-composer` branch. If you like to check it out, please require `dev-feature/php-composer`.
 
