@@ -1,0 +1,307 @@
+<!-- person.phtml -->
+
+<?php
+$prefixes = '
+PREFIX cphm: <' . $this->namespaces["cphm"] . '>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ';
+
+$classTypeof = $prefixes . 'SELECT *
+WHERE {
+	<'.$this->resourceUri.'> rdf:type ?resourceClass . 
+	?resourceClass rdfs:label ?resourceUri .
+	FILTER (lang(?resourceUri) = "de")
+}';
+$classTypeof = $this->querylist( $classTypeof, 'local/items/plain.phtml');
+
+/*
+Matrikel */
+$matrikelQuery = $prefixes . 'SELECT DISTINCT * WHERE {
+	<' . $this->resourceUri . '> cphm:hasMatrikel ?resourceUri .
+	?resourceUri cphm:semester ?label .
+	}';
+$matrikel = $this->querylist( $matrikelQuery, 'local/items/resource.phtml' );
+
+// isProf for Classtype "Matrikel"
+$isProfQuery = $prefixes . 'SELECT DISTINCT * WHERE {
+	?resourceUri rdf:type cphm:Professor ;
+		cphm:hasMatrikel <' . $this->resourceUri . '> .
+	}';
+$isProf = $this->querylist( $isProfQuery, 'local/items/resource.phtml' );
+
+/*
+Birth & Death */
+$birthDeathQuery = $prefixes . 'SELECT *
+WHERE {
+	<' . $this->resourceUri . '> cphm:hasPeriod ?resourceUri .
+	?resourceUri rdf:type ?classTypeof .
+	{ ?resourceUri rdf:type cphm:Birth . }
+	UNION
+	{ ?resourceUri rdf:type cphm:Death . }
+	OPTIONAL { ?resourceUri cphm:date ?date . }
+	OPTIONAL { ?resourceUri cphm:note ?periodNote . }	
+} ORDER BY ?date';
+//OPTIONAL { ?resourceUri cphm:periodPlace ?periodPlace . }
+$birthDeath = $this->querylist( $birthDeathQuery, 'local/items/periodOfLife.phtml', array('cphm' => $this->namespaces["cphm"]));
+
+/*
+Family: Parents, Siblings, Spouse, Childs */
+$parentsQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?familyUri rdf:type cphm:Family ;
+		cphm:familyChild ?child ;
+		cphm:familyParent ?resourceUri .
+	FILTER ( ?child = <'.$this->resourceUri.'> ) }';
+$siblingsQuery = $prefixes . 'SELECT DISTINCT * WHERE {
+	?familyUri rdf:type cphm:Family ;
+		cphm:familyChild ?resourceUri ;
+		cphm:familyChild <' . $this->resourceUri . '> .
+	FILTER ( ?resourceUri != <'.$this->resourceUri.'> ) }';
+	//FILTER EXISTS { ?familyUri cphm:familyChild <' . $this->resourceUri . '> } }';
+$spouseQuery = $prefixes . 'SELECT DISTINCT * WHERE {
+	?familyUri rdf:type cphm:Family ;
+		cphm:familyParent ?resourceUri ;
+		cphm:familyParent <' . $this->resourceUri . '> .
+	FILTER ( ?resourceUri != <'.$this->resourceUri.'> ) }';
+	//FILTER EXISTS { ?familyUri cphm:familyParent <' . $this->resourceUri . '> . } }';
+$childsQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?familyUri rdf:type cphm:Family ;
+		cphm:familyChild ?resourceUri ;
+		cphm:familyParent ?parent .
+	FILTER ( ?parent = <'.$this->resourceUri.'> ) }';
+
+$family = array( 
+	"parents" 	=> $this->querylist( $parentsQuery, 'local/items/liplain.phtml', array('mode' => 'parents')),
+	"siblings"	=> $this->querylist( $siblingsQuery, 'local/items/liplain.phtml', array('mode' => 'siblings')),
+	"spouse" 	=> $this->querylist( $spouseQuery, 'local/items/liplain.phtml', array('mode' => 'spouse')),
+	"childs" 	=> $this->querylist( $childsQuery, 'local/items/liplain.phtml', array('mode' => 'childs'))
+);
+$familyLength = 0;
+foreach ($family as $k) { $familyLength += strlen($k); }
+
+/*
+Periods of Life ()without Birth,Death,Family
+*/
+$periodsObjects = array();
+$periodsClasses = array( "Qualification", "Chair", "Career", "Office" );
+foreach ($periodsClasses as $periodClass) {
+	$periodQuery = $prefixes . 'SELECT *
+	WHERE {
+		<' . $this->resourceUri . '> cphm:hasPeriod ?resourceUri .
+		?resourceUri rdf:type ?classTypeof .
+		?resourceUri rdf:type cphm:'.$periodClass.' .
+		OPTIONAL { ?resourceUri cphm:periodPlace ?periodPlace . }	
+		OPTIONAL { ?resourceUri cphm:date ?date . }
+		OPTIONAL { ?resourceUri cphm:from ?from . }
+		OPTIONAL { ?resourceUri cphm:to ?to . }
+		OPTIONAL { ?resourceUri cphm:periodNote ?periodNote . }
+		OPTIONAL { 
+			?resourceUri cphm:periodDocument ?periodDocument . 
+			OPTIONAL {
+				?periodDocument rdfs:label ?periodDocumentLabel .
+			}
+		}
+	} ORDER BY ASC(?date) ASC(?from)';
+	$periodObject = $this->querylist($periodQuery, 'local/items/periodOfLife.phtml', array('cphm' => $this->namespaces["cphm"]));
+	if ( $periodObject != "" ) {
+		$periodsObjects[] = array( "key" => $periodClass, "content" => $periodObject );
+	}
+}
+
+/*
+Dissertationen
+*/
+$praesesQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:QualificationDocument ;
+		rdfs:label ?label ;
+		cphm:praeses ?praeses .
+	FILTER ( ?praeses = <'.$this->resourceUri.'> ) } ORDER BY ?label';
+$dedicateeeQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:QualificationDocument ;
+		rdfs:label ?label ;
+		cphm:dedicatee ?dedicatee .
+	FILTER ( ?dedicatee = <'.$this->resourceUri.'> ) } ORDER BY ?label';
+$respondentQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:QualificationDocument ;
+		rdfs:label ?label ;
+		cphm:respondent ?respondent .
+	FILTER ( ?respondent = <'.$this->resourceUri.'> ) } ORDER BY ?label';
+$gratulantQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:QualificationDocument ;
+		rdfs:label ?label ;
+		cphm:gratulant ?gratulant .
+	FILTER ( ?gratulant = <'.$this->resourceUri.'> ) } ORDER BY ?label';
+$dissertation = array(
+	"praeses" 	=> $this->querylist( $praesesQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$praesesQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') ),
+	"dedicatee"	=> $this->querylist( $dedicateeeQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$dedicateeeQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') ),
+	"respondent"=> $this->querylist( $respondentQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$respondentQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') ),
+	"gratulant" => $this->querylist( $gratulantQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$gratulantQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') )
+);
+$dissertationLength = 0;
+foreach ($dissertation as $k) { $dissertationLength += strlen($k); }
+
+/*
+Vorlesungen
+*/
+$courseQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:Course ;
+		rdfs:label ?label ;
+		cphm:lecture ?lecture .		
+	FILTER ( ?lecture = <'.$this->resourceUri.'> ) } ORDER BY ?resourceUri';
+//$course = $this->querylist( $courseQuery, 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list"') );
+$course = $this->querylist( $courseQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$courseQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') );
+
+/*
+Reden und Programme
+*/
+$thesesQuery = $prefixes . 'SELECT DISTINCT * WHERE { 
+	?resourceUri rdf:type cphm:Theses ;
+		rdfs:label ?label ;
+		cphm:author ?author .
+	FILTER ( ?author = <'.$this->resourceUri.'> ) } ORDER BY ?resourceUri';
+$theses = $this->querylist( $thesesQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list" data-query="'.$thesesQuery.'" data-item="'.urlencode('<li><a href="%resourceUri%">%label%</a></li>').'"') );
+
+
+/*******************************************************************************
+END of Queries ....*/
+?>
+
+<div class="page-header">
+	<h2 class=""><?php echo $this->title ?> <small>(<?php echo $classTypeof; ?>)</small></h2>
+</div>
+
+<?php 
+$subHeaderInfo = [];
+
+$immaDigi = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'digitalisat> ?resourceUri', 'template' => 'plain'));
+if ( $immaDigi != "" ) { 
+	$subHeaderInfo[] = '<a href="'.$immaDigi.'">Digitalisat</a>';
+}
+
+$denomination = $this->literal(array('property' => $this->namespaces["cphm"] . 'denomination'));
+if ( $denomination != "" ) { 
+	$subHeaderInfo[] = "Konfession: " . $denomination;
+}
+
+if ( ! empty( $matrikel ) ) { 
+	$subHeaderInfo[] = "Immatrikulation: " . $matrikel;
+} 
+
+if ( ! empty( $isProf ) ) { 
+	$subHeaderInfo[] = "ist Professor: " . $isProf;
+} 
+
+echo "<p>" . implode(", ", $subHeaderInfo) . "</p>";
+?>
+
+<div class="row">
+	<?php
+	//$imageId = $this->literal(array('property' => $this->namespaces["cphm"] . 'imageSource'));
+	$imageId = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'imageSource> ?resourceUri', 'template' => 'plain'));
+	if ( $imageId != "" ) { ?>
+		<div class="col-md-2">
+			<a href="<?php echo $imageId; ?>/start.htm" target="_blank" class="thumbnail"><img src="<?php echo $imageId; ?>/thumbs/000001.jpg" alt="" /></a>
+		</div>
+	<?php } ?>
+
+	<?php if ( $birthDeath != "" ) { ?>
+		<div class="col-md-3 period-of-life birthDeath">
+			<!--<h3 class="">Lebensdaten</h3>-->
+			<?php echo $birthDeath; ?>
+		</div>
+	<?php } ?>
+	
+	<?php
+	//$alternativeWritingOfName = $this->literal(array('property' => $this->namespaces["cphm"] . 'alternativeWritingOfName'));
+	$alternativeWritingOfNameQuery = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'alternativeWritingOfName> ?resourceUri', 'template' => 'liplain'));
+	//$alternativeWritingOfName = "";
+	if ( $alternativeWritingOfNameQuery != "" ) { ?>
+		<div class="col-md-3 period-of-life nameVariants">
+			<h4>Namensvarianten</h4>
+			<?php echo $alternativeWritingOfNameQuery; ?>
+		</div>
+	<?php } ?>
+
+	<?php if ( $familyLength > 0 ) { ?>
+		<div class="col-md-4 period-of-life family">
+			<!--<h3 class="">Familie</h3>-->
+			<?php // $this->_('family') ?>
+			<?php
+			echo !empty($family["parents"]) ? "<h4>Eltern</h4>" . $family["parents"] : "";
+			echo !empty($family["siblings"]) ? "<h4>Geschwister</h4>" . $family["siblings"] : "";
+			echo !empty($family["spouse"]) ? "<h4>PartnerIn</h4>" . $family["spouse"] : "";
+			echo !empty($family["childs"]) ? "<h4>Kinder</h4>" . $family["childs"] : "";
+			?>
+		</div>
+	<?php } ?>
+</div>
+
+<?php
+if ( count( $periodsObjects ) > 1 ) { ?>
+	<h3 class="">Lebenslauf</h3>
+	<?php foreach ($periodsObjects as $key => $periodObject) { ?>
+		<div class="period-of-life period">
+
+			<?php 
+			$classTypeof = $prefixes . 'SELECT *
+			WHERE {
+				<http://http://uni-helmstedt.hab.de/cphm/'.$periodObject["key"].'> rdfs:label ?resourceUri .
+				FILTER (lang(?resourceUri) = "de")
+			}';
+			$classTypeof = $this->querylist( $classTypeof, 'local/items/plain.phtml'); ?>
+
+			<h4><?php echo $classTypeof; ?></h4>
+			<table class="table">
+				<?php echo $periodObject["content"]; ?>
+			</table>
+		</div>
+	<?php 
+	}
+} ?>
+
+<?php if ( $dissertationLength > 0 ) { ?>
+	<div class="row period-of-life dissertation">
+		<div class="col-md-12"><h3 class="">Dissertationen</h3></div>
+		<?php
+		echo !empty($dissertation["respondent"]) ? "<div class='col-md-4'><h4>Respondent</h4>" . $dissertation["respondent"] . '</div>' : "";
+		echo !empty($dissertation["dedicatee"]) ? "<div class='col-md-4'><h4>Dedicatee</h4>" . $dissertation["dedicatee"] . '</div>' : "";
+		echo !empty($dissertation["gratulant"]) ? "<div class='col-md-4'><h4>Gratulant</h4>" . $dissertation["gratulant"] . '</div>' : "";
+		echo !empty($dissertation["praeses"]) ? "<div class='col-md-4'><h4>Praeses</h4>" . $dissertation["praeses"] . '</div>' : "";
+		?>
+	</div>
+	<hr />
+<?php } ?>
+
+<?php
+if ( ! empty($theses) ) {
+	echo '<h3 class="">Reden und Programme</h3>';
+	echo $theses;
+	echo "<hr />";
+}
+if ( ! empty($course) ) {
+	echo '<h3 class="">Vorlesungen</h3>';
+	echo $course;
+	echo "<hr />";
+}
+
+
+/*
+Weitere Infos
+*/
+$furtherProperties = array(
+	"Publikationen" => "published",	
+	"DNB-Link" => "gnd",
+	"Autobiografische Literatur" => "literature",
+	"Referenzen und Quellen" => "references",
+	"Weblinks" => "webLinks",
+	"Weitere Informationen" => "furtherInformation",
+	"Anmerkung" => "note",
+
+);
+
+foreach ($furtherProperties as $key => $value) {
+	$property = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . $value.'> ?resourceUri', 'template' => 'liplain'));
+	if ( $property != "" ) {
+		echo "<h3>".$key."</h3>";
+		echo $property;
+	}
+} ?>

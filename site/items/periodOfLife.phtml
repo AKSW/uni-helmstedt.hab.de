@@ -1,0 +1,83 @@
+<?php
+
+$resourceUri = $this->resourceUri;
+$typeof = basename($this->classTypeof);
+
+$content = $this->title;
+
+if ( $typeof == "Birth" || $typeof == "Death" ) { // Birth or Death
+
+	if ( $typeof == "Birth" ) {
+		$content = "*";
+	} else {
+		$content = "†";
+	}
+
+	if ( isset($this->date) && ! empty($this->date) ) {
+		$content .= " " . $this->date;
+	}
+
+	$place = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->cphm . 'periodPlace> ?resourceUri', 'template' => 'resource'));
+
+	if ( $place != "" ) {
+		$content .= " in " . $place;
+	}
+
+	//$content = "<h4>" . $content . "</h4>";
+	$content = "<p>" . $content . "</p>";
+
+	if ( isset($this->periodNote) && ! empty($this->periodNote) ) {
+		$content .= '<p>&nbsp;&nbsp;&nbsp;Kommentar: ' . $this->periodNote . "</p>";
+	}
+	
+} else { // Study, Carreer, Graduation ...	other Periods
+
+	$date = "";
+	$content = "<tr><td>";
+	
+	if ( isset($this->date) && ! empty($this->date) ) {
+		$date .= $this->date;
+	}
+	if ( isset($this->from) && ! empty($this->to) ) {
+		$date .= "von ".  $this->from;
+	}
+	if ( isset($this->to) && ! empty($this->to) ) {
+		$date .= " bis " . $this->to;
+	}
+	if ( $date != "" ) {
+		$content .= "<small>" . $date . "</small>";
+	}
+
+	$content .= "</td><td>";
+
+	$content .= $this->title;
+
+
+	$periodBody = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->cphm . 'periodBody> ?resourceUri', 'template' => 'liplain'));
+	if ( $periodBody != "" ) {
+		$content .= '<p>Universität / Fakultät: '.$periodBody.'</p>';
+	}
+
+
+	if ( isset($this->periodPlace) && ! empty($this->periodPlace) ) {
+		$content .= '<p>Ort: <a href="'.$this->periodPlace.'">'.ucfirst(basename( $this->periodPlace ) ).'</a></p>';
+	}
+
+	if ( isset($this->periodDocument) && ! empty($this->periodDocument) ) {
+		$documentLabel = ( isset($this->periodDocumentLabel) && ! empty($this->periodDocumentLabel) ) ? $this->periodDocumentLabel : basename($this->periodDocument);
+		$content .= '<p>Dokument: <a href="'.$this->periodDocument.'">'.$documentLabel.'</a></p>';
+	}
+
+	if ( isset($this->periodNote) && ! empty($this->periodNote) ) {
+		$content .= '<p>Kommentar: ' . $this->periodNote . "</p>";
+	}
+
+	$content .= "</td></tr>";
+	
+}
+
+
+echo $content;
+
+?><?php
+/* This PHP tag is only to absorb the UNIX-newline */

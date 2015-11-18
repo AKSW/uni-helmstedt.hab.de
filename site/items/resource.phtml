@@ -1,0 +1,10 @@
+<?php /* if ( isset($this->title) && !empty($this->title) ) {
+	$title = $this->title;
+} else {
+	$title = basename($this->resourceUri);	
+} */ 
+$title = (isset($this->label)) ? $this->label : $this->title;
+?>
+
+<a href="<?= htmlentities($this->resourceUri) ?>"><?php echo $title; ?></a><?php
+/* This PHP tag is only to absorb the UNIX-newline */

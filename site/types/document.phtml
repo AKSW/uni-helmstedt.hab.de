@@ -1,0 +1,83 @@
+<!-- document.phtml -->
+<?php
+$prefixes = '
+PREFIX cphm: <' . $this->namespaces["cphm"] . '>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ';
+
+$properties = array(
+	"Typ"		=> "type",
+	"Datum"		=> "date",
+	"Semester"	=> "semester",
+	"Umfang"	=> "pagination",
+	"Schlagwort"=> "keyword",
+	"Signatur"	=> "shelfmark",
+	"Weitere Informationen" => "note",
+);
+
+$propertyLinks = array(
+	"VD 16"		=> "vd16",
+	"VD 17"		=> "vd17",
+	"Digitalisat" => "digitalisat",	
+);
+
+$personRelations = array(	
+	"Körperschaft" => "documentBody",
+	"Autobiografische Literatur" => "literature",	
+	"Lecture" => "lecture",
+	"Respondent" => "respondent",
+	"Gratulant" => "gratulant",
+	"Dedicatee" => "dedicatee",
+	"Praeses" => "praeses",
+	"Drucker" => "printer",
+	"Beteiligte Person" => "involvedPerson",
+	"Autor" => "author",
+);
+
+$classTypeof = $prefixes . 'SELECT *
+WHERE {
+	<'.$this->resourceUri.'> rdf:type ?resourceClass . 
+	?resourceClass rdfs:label ?resourceUri .
+	FILTER (lang(?resourceUri) = "de")
+}';
+$classTypeof = $this->querylist( $classTypeof, 'local/items/plain.phtml');
+
+?>
+
+<div class="page-header">
+	<h2 class=""><?php echo $this->title ?> <small>(<?php echo $classTypeof; ?>)</small></h2>
+</div>
+
+<div class="row">
+<?php foreach ($properties as $key => $value) {
+	$property = $this->literal(array('property' => $this->namespaces["cphm"] . $value));
+	if ( $property != "" ) {
+		echo '<div class="col-md-2"><h4>'.$key.'</h4>';
+		echo $property . '</div>';
+	}	
+} ?>
+<?php foreach ($propertyLinks as $key => $value) {
+	$property = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . $value.'> ?resourceUri', 'template' => 'resource'));
+	if ( $property != "" ) {
+		echo '<div class="col-md-2"><h4>'.$key.'</h4>';
+		echo $property . '</div>';
+	}	
+} ?>
+</div>
+
+<br />
+
+<div class="row">
+	<div class="col-md-12">
+		<h3>In Bezieung stehende Personen</h3>
+	</div>
+<?php foreach ($personRelations as $key => $value) {
+	$property = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . $value.'> ?resourceUri', 'template' => 'liplain'));
+	if ( $property != "" ) {
+		echo '<div class="col-md-4"><h4>'.$key.'</h4>';
+		echo $property . '</div>';
+	}
+} ?>
+</div>
+
+<?= $this->literal(array('tag' => 'div', 'class' => 'content')) ?>

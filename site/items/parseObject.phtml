@@ -1,0 +1,21 @@
+<?php
+$str = json_encode($this);
+echo $str;
+
+/*
+// ### USAGE ### //
+
+$resourceQuery = $prefixes . 'SELECT *
+WHERE {
+	<' . $this->resourceUri . '> ?p ?resourceUri .
+}';
+$resource = $this->querylist( $resourceQuery, 'local/items/parseObject.phtml');
+$resource = "[" . str_replace('}{', '},{', $resource) . "]";
+echo "<pre>";
+var_dump( json_decode($resource, true) );
+echo "</pre>";
+*/
+
+
+?><?php
+/* This PHP tag is only to absorb the UNIX-newline */

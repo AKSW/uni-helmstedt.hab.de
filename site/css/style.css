@@ -1,0 +1,168 @@
+* {
+    line-height: normal;
+    box-sizing: border-box;
+}
+html, body {
+    margin: 0;
+    padding: 0;    
+    height:100%;
+    position: relative;
+    line-height: normal;
+}
+h1 {
+    //letter-spacing: 0.1em;
+    font-size: 1.5em;
+    //font-weight: bold;
+    text-align: left;
+}
+
+.header {
+    background: none repeat scroll 0% 0% #3F3F3F;
+    min-height: 10%;
+    color: #fff;
+}
+.header a {
+    color: #fff;
+}
+
+.title {
+    font-family: Georgia,serif;
+    //color: #750000;
+    color: #fff;
+}
+.menu {
+    text-align: right;
+    padding: 1em 0;
+}
+.main-menu {
+    display: inline-block;
+    padding: 1.2em;
+}
+.search {
+    padding: 0.7em 0;
+}
+
+.content-container {    
+    position:relative;
+    height:auto !important;
+    height:80%;
+    min-height:80%;
+}
+.content {
+    padding: 20px 0;
+}
+
+.period-of-life p {
+    //padding-left: 40px;
+}
+
+.period-of-life.period td:first-child {
+    width: 20%;
+}
+
+.footer {
+    background: none repeat scroll 0% 0% #3F3F3F;
+    //position: absolute;
+    bottom: 0;
+    font-size: 0.9em;
+    width: 100%;
+    min-height: 10%;
+    border-top: 1px solid lightGray;
+    color: #fff;
+}
+.footer a {
+    color: #fff;
+}
+
+.loading {
+    background-image: url("../img/loader.gif");
+    background-position: left center;
+    background-repeat: no-repeat;
+    min-height: 20px;
+    padding-left: 20px;
+}
+.loading:after {
+    content: "lädt...";
+}
+
+
+.rdform-popup-layer {
+    position: absolute;    
+    background: white;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background:rgba(255,255,255,0.5);
+}
+.rdform-container {
+    width: 65%;
+    max-width: 900px;
+    min-width: 600px;    
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    margin-left: -470px;
+    border: 1px solid black;
+    background: white;
+    box-shadow: 5px 5px 5px gray;
+    border-radius: 10px;
+    padding: 30px;
+}
+#rdform-drag-header {
+    height: 30px;
+    position: relative;
+    width: 105%;
+    margin: -40px 30px 0px -30px;
+}
+#rdform-drag-header:hover {
+    /*cursor: move;*/
+}
+.rdform-resource-group .rdform {
+    margin-left: -35px;
+    margin-top: 2px;
+}
+
+.form-control.input-sm {
+    /*display: inline-block;*/
+    /*width: 70%;*/
+}
+.form-control.input-sm.rdform-datepicker {
+    display: block;
+    width: 100%;
+}
+
+.rdform-edit-class-resource {
+    display: none !important;
+}
+.rdform-class-group small {
+    margin-left: 5px;
+}
+
+
+.close-rdform-btn {
+    margin-right: -45px;
+    margin-top: -45px;   
+}
+.ui-state-focus {
+    background: #DDD none repeat scroll 0% 0% !important;
+    border: medium none !important;
+}
+.browser .img-thumbnail {
+    height: 100px;
+    margin-right: 10px;
+}
+.browser .browser-entry div {
+    color: #2c2c2c;
+}
+/*
+.extend-list li:nth-child(n+11) {
+    display: none;
+}
+*/
+.extender {
+    font-weight: bold;
+}
+.list-unstyled li {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}

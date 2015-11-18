@@ -1,0 +1,90 @@
+<!-- place.phtml. -->
+<?php
+$prefixes = '
+PREFIX cphm: <' . $this->namespaces["cphm"] . '>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ';
+
+$locatedInQuery = $prefixes . 'SELECT * WHERE {
+		<'.$this->resourceUri.'> <' . $this->namespaces["shv"] . 'isLocatedIn> ?resourceUri .
+	}';
+$locatedIn = $this->querylist( $locatedInQuery, 'local/items/liplain.phtml');
+
+$geonameQuery = $prefixes . 'SELECT * WHERE {
+		<'.$this->resourceUri.'> cphm:geoname ?resourceUri .
+	}';
+$geoname = $this->querylist( $geonameQuery, 'local/items/resource.phtml');
+
+$bornQuery = $prefixes . 'SELECT * WHERE {
+	?resourceUri <' . $this->namespaces["cphm"] . 'hasPeriod> ?period .
+	?resourceUri rdfs:label ?label .
+	?period rdf:type <' . $this->namespaces["cphm"] . 'Birth> .
+	?period <' . $this->namespaces["cphm"] . 'periodPlace> <'.$this->resourceUri.'> .
+} ORDER BY ?label';
+$born = $this->querylist( $bornQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list list-unstyled" data-query="'.$bornQuery.'" data-item="'.urlencode('<li class="col-md-3"><a href="%resourceUri%">%label%</a></li>').'"', "oddclass" => "col-xs-3" ) );
+
+$diedQuery = $prefixes . 'SELECT * WHERE {
+	?resourceUri <' . $this->namespaces["cphm"] . 'hasPeriod> ?period .
+	?resourceUri rdfs:label ?label .
+	?period rdf:type <' . $this->namespaces["cphm"] . 'Death> .
+	?period <' . $this->namespaces["cphm"] . 'periodPlace> <'.$this->resourceUri.'> .
+} ORDER BY ?label';
+$died = $this->querylist( $diedQuery . ' LIMIT 10', 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list list-unstyled" data-query="'.$diedQuery.'" data-item="'.urlencode('<li class="col-md-3"><a href="%resourceUri%">%label%</a></li>').'"', "oddclass" => "col-md-3" ));
+
+$bodiesQuery = $prefixes . 'SELECT * WHERE {
+	?resourceUri <' . $this->namespaces["cphm"] . 'bodyPlace> ?period .
+FILTER ( ?period = <'.$this->resourceUri.'> )
+}';
+$bodies = $this->querylist( $bodiesQuery, 'local/items/liplain.phtml');
+
+?>
+
+<div class="page-header">
+	<h2 class=""><?php echo $this->title ?></h2>
+</div>
+
+<?php if ( $geoname != "" ) { ?>
+	<p>Geoname: <?php echo $geoname; ?></p>
+<?php } ?>
+
+<?php if ( $locatedIn != "" ) { ?>
+	<div class="">
+		<p>Liegt in: <?php echo $locatedIn; ?></p>
+	</div>
+<?php } ?>
+
+<?php $priorTo = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["shv"] . 'priorTo> ?resourceUri', 'template' => 'resource'));
+if ( $priorTo != "" ) { ?>
+	<p>Vorgänder von: <?php echo $priorTo; ?></p>
+<?php } ?>
+
+<?php $subsequentTo = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["shv"] . 'subsequentTo> ?resourceUri', 'template' => 'resource'));
+if ( $subsequentTo != "" ) { ?>
+	<p>Nachfolger von: <?php echo $subsequentTo; ?></p>
+<?php } ?>
+
+
+<?php if ( $born != "" ) { ?>
+	<div class="row">
+		<div class="col-md-12">
+		<h3 class="">Hier geborene Personen</h3>
+		<?php echo $born; ?>
+		</div>
+	</div>
+<?php } ?>
+
+<?php if ( $died != "" ) { ?>
+	<div class="row">
+		<div class="col-md-12">
+		<h3 class="">Hier verstorbene Personen</h3>
+		<?php echo $died; ?>
+		</div>
+	</div>
+<?php } ?>
+
+<?php if ( $bodies != "" ) { ?>
+	<div class="">
+		<h3 class="">Körperschaften in <?php echo $this->title ?></h3>
+		<?php echo $bodies; ?>
+	</div>
+<?php } ?>

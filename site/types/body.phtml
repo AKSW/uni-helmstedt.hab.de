@@ -1,0 +1,58 @@
+<!-- body.phtml -->
+<?php
+$prefixes = '
+PREFIX cphm: <' . $this->namespaces["cphm"] . '>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> ';
+
+$personsQuery = $prefixes . 'SELECT DISTINCT * WHERE {
+	?resourceUri <' . $this->namespaces["cphm"] . 'hasPeriod> ?period ;
+		rdfs:label ?label .
+	?period <' . $this->namespaces["cphm"] . 'periodBody> <'.$this->resourceUri.'> .
+} ORDER BY ?label';
+//$persons = $this->querylist( $personsQuery, 'local/items/liplain.phtml', array("tag" => 'ul class="list-unstyled"', "oddclass" => "list-group-item col-md-3" ));
+$persons = $this->querylist( $personsQuery . " LIMIT 10", 'local/items/liplain.phtml', array("tag" => 'ul class="extend-list list-unstyled" data-query="'.$personsQuery.'" data-item="'.urlencode('<li class="col-md-3"><a href="%resourceUri%">%label%</a></li>').'"', "oddclass" => "col-xs-3" ) );
+
+?>
+
+<div class="page-header">
+	<h2 class=""><?php echo $this->title ?></h2>
+</div>
+
+<?php $gnd = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'gnd> ?resourceUri', 'template' => 'plain'));
+if ( $gnd != "" ) { ?>
+	<p>GND: <?php echo $gnd; ?></p>
+<?php } ?>
+
+<?php $bodyPlace = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'bodyPlace> ?resourceUri', 'template' => 'resource'));
+if ( $bodyPlace != "" ) { ?>
+	<p>Ort: <?php echo $bodyPlace; ?></p>
+<?php } ?>
+
+<?php $isPartOf = $this->query(array('where' => '<' . $this->resourceUri . '> <' . $this->namespaces["cphm"] . 'isPartOf> ?resourceUri', 'template' => 'resource'));
+if ( $isPartOf != "" ) { ?>
+	<p>Gehört zu: <?php echo $isPartOf; ?></p>
+<?php } ?>
+
+<?php $faculties = $this->query(array('where' => '?resourceUri <' . $this->namespaces["cphm"] . 'isPartOf> <' . $this->resourceUri . '>', 'template' => 'liplain'));
+if ( $faculties != "" ) { ?>
+	<div class="">
+		<h3 class="">Zugehörige Fakultäten/Institute/Bereiche</h3>
+		<?php echo $faculties; ?>
+	</div>
+<?php } ?>
+
+<?php if ( $persons != "" ) { ?>
+	<div class="">
+		<h3 class="">In Beziehung stehende Personen</h3>
+		<?php echo $persons; ?>
+	</div>
+<?php } ?>
+
+<?php $docs = $this->query(array('where' => '?resourceUri <' . $this->namespaces["cphm"] . 'documentBody> <' . $this->resourceUri . '>', 'template' => 'liplain'));
+if ( $docs != "" ) { ?>
+	<div class="">
+		<h3 class="">In Beziehung stehende Dokumente</h3>
+		<?php echo $docs; ?>
+	</div>
+<?php } ?>

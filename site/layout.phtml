@@ -1,0 +1,195 @@
+<?php
+/**
+ * This file is part of the {@link http://ontowiki.net OntoWiki} project.
+ *
+ * @copyright Copyright (c) 2011, {@link http://aksw.org AKSW}
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
+
+/**
+ * example site extension layout template
+ */
+
+$owApp = OntoWiki::getInstance();
+
+// this is the standard template data
+$templateData = $this->templateData;
+$title = $this->literal(array('uri' => $this->modelUri, 'property' => EF_RDFS_NS . 'label', 'plain' => true));
+// get the type of the class for rdform template
+$classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' => true));
+
+?><!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/">
+<head>
+	<meta charset="UTF-8">
+	<title><?= $this->title . " : " . $title ?></title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="generator" content="<?= $this->generator ?>" />
+
+	<link rel="alternate" type="application/rdf+xml" href="<?= $this->resourceUri ?>.rdf" />
+	<link rel="pingback" href="<?= $this->pingbackUrl ?>" />
+
+	<link rel="shortcut icon" type="image/x-icon" href="<?= $this->baseUri ?>/img/favicon.png" />
+
+	<link rel="<?= $this->curie('http://xmlns.com/foaf/0.1/primaryTopic') ?>" href="<?= $this->resourceUri?>" />
+	<link type="text/css" href="<?= $this->baseUri ?>/css/bootstrap.css" rel="stylesheet" />
+	<link type="text/css" href="<?= $this->baseUri ?>/css/style.css" rel="stylesheet" />
+	<link type="text/css" href="<?= $this->baseUri ?>/css/smoothness/jquery-ui.custom.min.css" rel="stylesheet" />
+
+	<!-- jQuery -->
+	<script type="text/javascript" src="<?= $this->themeUrlBase ?>scripts/libraries/jquery.js"></script>
+
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+	<?php
+	// includes the GA header script, includes the exhibit header links, other head scripts
+	$this->headScript();
+	?>
+</head>
+
+<body <?php foreach ($this->namespaces as $prefix => $ns): ?><?= ' xmlns:' . $prefix . '="' . $ns . '"' ?><?php endforeach; ?> >
+
+	<header class="header">
+
+		<div class="container"> 			
+
+			<div class="pull-right">
+
+				<?php if ( $owApp->getUser()->isAnonymousUser() ) { ?>
+
+					<form method="post" action="<?php echo $this->urlBase ?>application/login" class="search form-inline" name="locallogin">
+						<input type="hidden" name="logintype" value="locallogin" />
+						<input type="hidden" name="redirect-uri" value="%2Fabout" />
+
+						<div class="form-group">
+							<label for="username" class="sr-only">Benutzername</label>
+							<input class="form-control" type="text" id="username" name="username" placeholder="Benutzername" />
+						</div>
+						<div class="form-group">
+							<label for="password" class="sr-only">Kennwort</label>
+							<input class="form-control" type="password" id="password" name="password" placeholder="Passwort" />
+						</div>
+
+						<button type="submit" class="btn btn-default">Anmelden</button>
+					</form>
+
+				<?php } ?>
+
+		        	<form class="search pull-right" action="<?php echo $this->urlBase ?>catalogue.html" method="POST" role="search">
+		        		<input name="mode" type="hidden" value="person" />
+					    <input name="q" class="search-field form-control" role="search" data-value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" type="text" placeholder="Suche ..." />
+					</form>
+
+					<div class="nav menu main-menu">
+						<?php 
+						//var_dump( $this->templateOptions()->getValue('http://www.w3.org/2000/01/rdf-schema#label') );
+						$tmlOpt = $this->templateOptions();
+						$navResource = $tmlOpt->getValue('http://rdfs.org/ns/void#rootResource');
+						$navOptions = array(
+							'navResource' => $navResource,
+							//'navId' => 'nav-main',
+							'activeUrl' => $this->resourceUri,
+							'listClass' => 'list-inline',
+							//'navClass' => 'navbar'
+						);
+						$navList = $this->navigationList($navOptions);
+						if ( !empty($navList) ) {
+							echo $navList;
+						} else { ?>
+						<nav>
+							<ul class="list-inline" >
+								<li class="active"><a href="<?php echo $this->urlBase ?>about">About the Project</a></li>
+								<li><a href="<?php echo $this->urlBase ?>catalogue">Katalog</a></li>
+							</ul>
+						</nav>
+						<?php } ?>
+					</div>
+
+			</div>
+
+			<h1 class="title"><?= $title ?></h1>
+			
+		</div>
+	</header>
+
+	<div class="container content-container">
+
+		<?php if ( ! $owApp->getUser()->isAnonymousUser() ) { ?>
+
+			<div class="menu pull-left">
+				Angemeldet als: <?php echo $owApp->getUser()->getUsername(); ?> | 
+				<a href="<?php echo $this->urlBase ?>application/logout">Abmelden</a>
+			</div>
+		
+		<?php } ?>
+
+			<div class="menu pull-right">
+				<a href="<?= $this->Url(array('uri' => $this->resourceUri, 'stayOnSite' => false)) ?>"><?= $this->_('Admin-Ansicht') ?></a>
+			</div>
+
+			<br />
+		
+
+		<div class="content">
+
+		<?php
+		// render content
+		/*
+		$siteTemplate = $this->query(array('where' => '<' . $classTypeof . '> <http://ns.ontowiki.net/SysOnt/Site/classTemplate> ?resourceUri', 'template' => 'plain'));
+		var_dump($siteTemplate);
+		if ( ! empty($siteTemplate) ) {
+			echo $this->renderx($this->templateData); 	
+		} else {
+			echo $this->partial('local/types/default.phtml', $this );
+		}
+		*/
+		
+
+		
+		
+		echo $this->renderx($this->templateData);
+		?>
+		</div>
+		
+	</div> <!-- /container -->	
+	
+	<footer class="footer">
+		<div class="container content">		
+			<div class="pull-right"><small><?php echo $this->partial('local/lastchange.phtml', $this->lastchange($this->resourceUri)); ?></small></div>
+			<?php
+			$copy = $this->literal(array('uri' => $this->modelUri, 'property' => 'http://creativecommons.org/ns#attributionName'));
+			if ($copy != null) : ?>
+				<p><small>&copy; <?= date('Y') . ' ' . $copy ?></small></p>
+			<?php endif ?>
+		</div>
+	</footer>
+
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/jquery.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/bootstrap.js"></script>
+	<!-- include promise for IE compatibility -->
+	<script type="text/javascript" src="//cdn.jsdelivr.net/g/es6-promise@1.0.0"></script>
+
+	<script language="JavaScript">
+		var urlBase = '<?php echo $this->urlBase ?>';
+		var modelIri = '<?php echo $this->modelUri ?>';
+		var resourceTemplate = '<?php echo basename($classTypeof) ?>';
+		var resourceUri = '<?php echo $this->resourceUri ?>';
+	</script>
+
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/jquery-ui.custom.min.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/jquery.timeago.js" charset="utf-8"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/browser.js"></script>
+	<script type="text/javascript" src="<?php echo $this->baseUri ?>/js/site.js"></script>	
+
+	<input type="hidden" id="urlBase" value="<?php echo $this->urlBase ?>" />
+	<input type="hidden" id="modelIri" value="<?php echo $this->modelUri ?>" />
+	<input type="hidden" id="resourceTemplate" value="<?php echo basename($classTypeof) ?>" />	
+
+</body>
+</html>

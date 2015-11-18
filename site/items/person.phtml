@@ -1,0 +1,10 @@
+<a href="<?= htmlentities($this->resourceUri) ?>">
+	<?= $this->literal(array('uri' => $this->resourceUri, 'property' => 'rdfs:label')); ?>
+</a>
+<?php
+/* This PHP tag is only to absorb the UNIX-newline */
+
+/**
+Such Repräsentation:
+rdfs:label (Name inklusive Geburtsjahr und Ort) Angabe: ist Pfarrer durch Agaben <em>ev-luth. Pfarrer (Sachsen)</em>
+ */
