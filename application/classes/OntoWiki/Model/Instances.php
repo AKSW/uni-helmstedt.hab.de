@@ -898,7 +898,9 @@ class OntoWiki_Model_Instances extends OntoWiki_Model
         $options['mode']            = 'instances';
         $options['type']            = $type;
         $options['memberPredicate'] = EF_RDF_TYPE;
-        $options['withChilds']      = isset($option['withChilds']) ? $option['withChilds'] : true;
+        //$options['withChilds']      = isset($option['withChilds']) ? $option['withChilds'] : true;
+        // edited by Simi, 5.11.15
+        $options['withChilds']      = isset($option['withChilds']) ? $option['withChilds'] : false;
 
         $options['hierarchyUp']        = EF_RDFS_SUBCLASSOF;
         $options['hierarchyIsInverse'] = true;
