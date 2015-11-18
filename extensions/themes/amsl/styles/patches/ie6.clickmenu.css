@@ -1,0 +1,23 @@
+/**
+ * @copyright Copyright (c) 2014, {@link http://aksw.org AKSW}
+ * @license   http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
+.clickMenu ul {
+	float: left;
+	width: 100%;
+}
+
+.clickMenu div.inner {
+}
+
+.clickMenu div.inner div.outerbox {
+	left: 90px;
+}
+
+.clickMenu li.main {
+}
+
+.clickMenu li {
+	padding: 0.35em 0.5em 0.25em 0.5em;
+}
+
