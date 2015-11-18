@@ -110,6 +110,8 @@ submodules: # read-only
 	git submodule init
 	git config submodule.libraries/Erfurt.url "https://github.com/AKSW/Erfurt.git"
 	git config submodule.libraries/RDFauthor.url "https://github.com/AKSW/RDFauthor.git"
+	# dirty hack to overwrite rdfauthor.src to add LIMIT 10 for mysql...
+	cp libraries/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js
 	git submodule update
 
 submodules-developer: # read-write
