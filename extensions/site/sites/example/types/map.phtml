@@ -1,0 +1,34 @@
+<?php
+/**
+ * This file is part of the {@link http://ontowiki.net OntoWiki} project.
+ *
+ * @copyright Copyright (c) 2012, {@link http://aksw.org AKSW}
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
+
+/**
+ * aksw.org feed template
+ *
+ * arranges the news feed for the resource
+ */
+
+// prepare module options
+$map = trim($this->module('map', array('noChrome' => true)));
+?>
+<div class="page-header">
+  <h1><?php echo $this->title ?> <small>site</small></h1>
+</div>
+<div class="row">
+<div class="col-md-8">
+    <?php echo $this->literal(array('class' => 'content')); ?>
+</div>
+<div class="col-md-4">
+<?php if (!empty($map)): ?>
+<?php echo $map; ?>
+<?php else: ?>
+<div class="alert alert-info">
+Please enable the map extension in OntoWiki to view this example
+</div>
+<?php endif; ?>
+</div>
+</div>

@@ -1,0 +1,56 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owconfig: <http://ns.ontowiki.net/SysOnt/ExtensionConfig/> .
+@prefix extension: <http://ns.ontowiki.net/Extensions/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix event: <http://ns.ontowiki.net/SysOnt/Events/> .
+@prefix : <https://github.com/AKSW/site.ontowiki/raw/master/doap.n3#> .
+
+<> foaf:primaryTopic :site .
+:site a doap:Project ;
+
+  owconfig:privateNamespace <http://ns.ontowiki.net/Extensions/ontowiki/> ;
+  owconfig:enabled "true"^^xsd:boolean ;
+
+  rdfs:label "Site Rendering" ;
+  doap:name "site" ;
+  doap:homepage <https://github.com/AKSW/site.ontowiki>;
+  doap:description "A component which renders custom HTML views for linked data resource and thus creates rdf-based web sites." ;
+  doap:maintainer <http://aksw.org/SebastianTramp>;  
+  owconfig:registeredAt <http://extensions.ontowiki.net/repository> ;
+  owconfig:templates "sites" ;
+  owconfig:languages "languages" ;
+  owconfig:helpers "helpers" ;
+
+  owconfig:helperEvent event:onAnnounceWorker ;
+  owconfig:helperEvent event:onPostBootstrap ;
+  owconfig:helperEvent event:onShouldLinkedDataRedirect ;
+  owconfig:helperEvent event:onCreateMenu ;
+  owconfig:helperEvent event:onResolveDomainAliasInput ;
+
+  owconfig:requiresExtension extension:linkeddataserver;
+
+  owconfig:hasModule :CacheViewer;
+
+  :defaultSite "example" ;
+  :subfolderTypes "types" ;
+  doap:release :v1-0 .
+
+:v1-0 a doap:Version ;
+  doap:revision "1.0" ;
+  doap:created "2011-01-01" ;
+  doap:file-release <https://github.com/AKSW/site.ontowiki/zipball/master> .
+
+:defaultSite rdfs:label "The site identifier which is used for the site rendering".
+:subfolderTypes rdfs:label "Local name of subfolder in the templates directory, holding templates for resource types.".
+
+<http://aksw.org/SebastianTramp> a foaf:Person;
+  foaf:name "Sebastian Tramp";
+  foaf:homepage <http://aksw.org/SebastianTramp>;
+  foaf:mbox <mailto:tramp@informatik.uni-leipzig.de> .
+
+:CacheViewer a owconfig:Module;
+  owconfig:priority "30";
+  rdfs:label "Cache";
+  owconfig:context "main.window.modelinfo", "main.window.properties".
