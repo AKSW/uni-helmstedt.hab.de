@@ -110,9 +110,7 @@ submodules: # read-only
 	git submodule init
 	git config submodule.libraries/Erfurt.url "https://github.com/AKSW/Erfurt.git"
 	git config submodule.libraries/RDFauthor.url "https://github.com/AKSW/RDFauthor.git"	
-	git submodule update
-	# dirty hack by simi to overwrite rdfauthor.src to add LIMIT 10 for mysql...
-	cp libraries/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js
+	git submodule update	
 
 submodules-developer: # read-write
 	git submodule init
@@ -321,3 +319,12 @@ endif
 
 list-events:
 	@grep -R "new Erfurt_Event" * 2> /dev/null | sed "s/.*new Erfurt_Event('//;s/');.*//" | sort -u
+
+# some changes for helmstedt mysql
+helmstedt:
+	# dirty hack by simi to overwrite rdfauthor.src to add LIMIT 10 for mysql...
+	cp libraries/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js	
+	# enable site
+	echo -e '"enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
+	# add site symlink
+	cd extensions/site/sites && ln -s ../../../site/ local

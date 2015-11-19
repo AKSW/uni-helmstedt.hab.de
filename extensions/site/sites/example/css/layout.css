@@ -1,9 +1,0 @@
-.toTop{
-	position: fixed;
-    bottom: 65px;
-    right: -7px;
-	opacity:0.3
-}
-.toTop:hover{
-	opacity:0.8
-}
