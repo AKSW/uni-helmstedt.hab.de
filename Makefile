@@ -325,6 +325,6 @@ helmstedt:
 	# dirty hack by simi to overwrite rdfauthor.src to add LIMIT 10 for mysql...
 	cp libraries/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js	
 	# enable site
-	echo -e '"enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
+	echo -e 'enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
 	# add site symlink
 	cd extensions/site/sites && ln -s ../../../site/ local
