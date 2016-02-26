@@ -25,8 +25,6 @@ var browserArg = {
 	}
 };
 
-console.log($("input:radio[name=search-mode]:checked").val());
-
 if ( $("input.search-field").val() != "" ) {
 	var s = $("input.search-field").val();
 	var mode = $("input:radio[name=search-mode]:checked").val();
