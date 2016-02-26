@@ -29,6 +29,8 @@ h1 {
     /*font-family: Georgia,serif;
     /color: #750000;*/
     color: #fff;
+    font-size: 2em;
+    letter-spacing: 0.1em;
 }
 .menu {
     text-align: right;
