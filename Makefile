@@ -328,3 +328,5 @@ helmstedt:
 	echo -e 'enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
 	# add site symlink
 	cd extensions/site/sites && ln -s ../../../site/ local
+	# disable community extensions because of some mysql errors
+	echo -e 'enabled = false' > extensions/community.ini
