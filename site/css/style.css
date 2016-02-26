@@ -168,3 +168,11 @@ h1 {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+.list-group-item {
+    padding: 5px 10px;
+}
+.browser-entry h4 {
+    font-size: 1em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
