@@ -25,13 +25,22 @@ var browserArg = {
 	}
 };
 
-// Enable Browser to proflist
+console.log($("input:radio[name=search-mode]:checked").val());
 
 if ( $("input.search-field").val() != "" ) {
 	var s = $("input.search-field").val();
+	var mode = $("input:radio[name=search-mode]:checked").val();
 	var browse = {};
-	browse["Suche '" + s + "'"] = {
-			"query" : "SELECT DISTINCT * WHERE { ?resourceUri rdf:type cphm:Professor . ?resourceUri rdfs:label ?label . FILTER regex(?label, '"+s+"', 'i') }",
+	var query = "";
+
+	if ( mode == "Stadt" ) {		
+		query = "SELECT DISTINCT * WHERE { ?resourceUri rdf:type <http://ns.aksw.org/spatialHierarchy/City> . ?resourceUri rdfs:label ?label . FILTER regex(?label, '"+s+"', 'i') }";
+	} else {
+		query = "SELECT DISTINCT * WHERE { ?resourceUri rdf:type cphm:Professor . ?resourceUri rdfs:label ?label . FILTER regex(?label, '"+s+"', 'i') }";
+	}
+
+	browse["Suche "+mode+" '" + s + "'"] = {
+			"query" : query,
 			"classes" : ["http://uni-helmstedt.hab.de/cph/model/Professor"]
 	};
 	browse = $.extend({}, browse, browserArg.browse );
@@ -42,6 +51,13 @@ if ( $("input.search-field").val() != "" ) {
 }
 
 $(".browser").Browser( browserArg );
+
+$(".btn-show-search").click(function(event) {
+	$("form.search").hide();
+	$("form.search").removeClass('hidden');
+	$("form.search").fadeIn();
+	$(this).hide();
+});
 
 /*
 $.each( $(".extend-list"), function(n,i) {

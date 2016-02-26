@@ -60,31 +60,17 @@ $classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' =>
 		<div class="container"> 			
 
 			<div class="pull-right">
+					
+		        	<form class="search pull-right hidden" action="<?php echo $this->urlBase ?>catalogue.html" method="POST" role="search">
+		        		<input name="q" class="search-field form-control" role="search" data-value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" type="text" placeholder="Suche ..." />
 
-				<?php if ( $owApp->getUser()->isAnonymousUser() ) { ?>
-
-					<form method="post" action="<?php echo $this->urlBase ?>application/login" class="search form-inline" name="locallogin">
-						<input type="hidden" name="logintype" value="locallogin" />
-						<input type="hidden" name="redirect-uri" value="%2Fabout" />
-
-						<div class="form-group">
-							<label for="username" class="sr-only">Benutzername</label>
-							<input class="form-control" type="text" id="username" name="username" placeholder="Benutzername" />
-						</div>
-						<div class="form-group">
-							<label for="password" class="sr-only">Kennwort</label>
-							<input class="form-control" type="password" id="password" name="password" placeholder="Passwort" />
-						</div>
-
-						<button type="submit" class="btn btn-default">Anmelden</button>
-					</form>
-
-				<?php } ?>
-
-		        	<form class="search pull-right" action="<?php echo $this->urlBase ?>catalogue.html" method="POST" role="search">
-		        		<input name="mode" type="hidden" value="person" />
-					    <input name="q" class="search-field form-control" role="search" data-value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" value="<?php if (isset($_POST['q'])) echo $_POST['q'] ?>" type="text" placeholder="Suche ..." />
-					</form>
+						<label class="radio-inline">
+						  <input type="radio" name="search-mode" id="" value="Professor" <?php if (isset($_POST['search-mode'])) { if ($_POST['search-mode']=="Professor") echo 'checked=""'; } else { echo 'checked=""'; } ?>> Professor
+						</label>
+						<label class="radio-inline">
+						  <input type="radio" name="search-mode" id="" value="Stadt" <?php if (isset($_POST['search-mode']) && $_POST['search-mode']=="Stadt") echo 'checked=""' ?>> Stadt
+						</label>
+					</form>					
 
 					<div class="nav menu main-menu">
 						<?php 
@@ -108,6 +94,7 @@ $classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' =>
 								<ul class="list-inline" >
 									<li class="active"><a href="<?php echo $this->urlBase ?>about">Über</a></li>
 									<li><a href="<?php echo $this->urlBase ?>catalogue">Katalog</a></li>
+									<li><a href="#" class="btn-show-search"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a></li>
 								</ul>
 							</nav>
 						<?php } ?>
@@ -161,7 +148,29 @@ $classTypeof = $this->literal(array('property' => EF_RDF_NS . 'type', 'plain' =>
 	</div> <!-- /container -->	
 	
 	<footer class="footer">
-		<div class="container content">		
+		<div class="container content">	
+
+			<?php if ( $owApp->getUser()->isAnonymousUser() ) { ?>
+				<div class="pull-left">
+					<form method="post" action="<?php echo $this->urlBase ?>application/login" class="search form-inline" name="locallogin">
+						<input type="hidden" name="logintype" value="locallogin" />
+						<input type="hidden" name="redirect-uri" value="%2Fabout" />
+
+						<div class="form-group">
+							<label for="username" class="sr-only">Benutzername</label>
+							<input class="form-control" type="text" id="username" name="username" placeholder="Benutzername" />
+						</div>
+						<div class="form-group">
+							<label for="password" class="sr-only">Kennwort</label>
+							<input class="form-control" type="password" id="password" name="password" placeholder="Passwort" />
+						</div>
+
+						<button type="submit" class="btn btn-default">Anmelden</button>
+					</form>
+				</div>
+
+				<?php } ?>
+
 			<div class="pull-right"><small><?php echo $this->partial('local/lastchange.phtml', $this->lastchange($this->resourceUri)); ?></small></div>
 			<?php
 			$copy = $this->literal(array('uri' => $this->modelUri, 'property' => 'http://creativecommons.org/ns#attributionName'));
