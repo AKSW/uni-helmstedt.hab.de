@@ -63,7 +63,7 @@ store.comparer.ignoredMethods[] = sparqlQuery
 ;;;;
 ;; Frontend language
 ;;
-languages.locale = "en"             ; en, de, ru, zh (Chinese)
+languages.locale = "de"             ; en, de, ru, zh (Chinese)
 
 ;;;;
 ;; Set this identifier to a unique value if you want to run multiple OntoWiki
@@ -122,7 +122,7 @@ cache.frontend.cache_id_prefix                      = 'OW_'
 ;; Available: file | memcached | database | sqlite | apc
 ;; Recommended: memcached | file
 cache.backend.type                                  = "file"
- 
+
 ;; Options for file cache backend
 cache.backend.file.cache_dir                        = "./cache/"
 cache.backend.file.file_locking                     = NULL
@@ -152,4 +152,3 @@ worker.enable	= false
 ;; uncomment this line if you need more information
 ;;
 ;debug = true
-
