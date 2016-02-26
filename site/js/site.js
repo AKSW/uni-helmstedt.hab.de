@@ -13,15 +13,15 @@ var browserArg = {
 			*/
 			"classes" : ["http://uni-helmstedt.hab.de/cph/model/Professor"]
 		},
-		"Personen" : {
+		/*"Personen" : {
 			"classes" : ["http://uni-helmstedt.hab.de/cph/model/Person"]
-		},
+		},*/
 		"Universitäten" : {
 			"classes" : [ "http://uni-helmstedt.hab.de/cph/model/Academy" ]
 		},
-		"Orte" : {
+		/*"Orte" : {
 			"classes" : ["http://ns.aksw.org/spatialHierarchy/City"]
-		}
+		}*/
 	}
 };
 
