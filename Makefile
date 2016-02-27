@@ -323,10 +323,12 @@ list-events:
 # some changes for helmstedt mysql
 helmstedt:
 	# dirty hack by simi to overwrite rdfauthor.src to add LIMIT 10 for mysql...
-	cp libraries/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js	
+	cp libraries/HelmstedtFixes/rdfauthor.js libraries/RDFauthor/src/rdfauthor.js	
+	# fix search for resources with mysql backend
+	cp libraries/HelmstedtFixes/Store.php libraries/Erfurt/library/Erfurt/Store.php
 	# enable site
 	echo -e 'enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
 	# add site symlink
-	cd extensions/site/sites && ln -s ../../../site/ local
+	cd extensions/site/sites && ln -f -s ../../../site/ local
 	# disable community extensions because of some mysql errors
 	echo -e 'enabled = false' > extensions/community.ini

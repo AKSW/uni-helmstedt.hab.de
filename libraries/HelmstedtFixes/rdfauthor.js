@@ -4,6 +4,10 @@
  * Author: Norman Heino <norman.heino@gmail.com>
  */
 
+ /*
+ Fix by simi, line 486
+ */
+
 /**
  * RDFauthor base object.
  * Serves as a namespace, widget registry and simplified façade.
