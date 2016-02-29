@@ -327,8 +327,8 @@ helmstedt:
 	# fix search for resources with mysql backend
 	cp libraries/HelmstedtFixes/Store.php libraries/Erfurt/library/Erfurt/Store.php
 	# enable site
-	echo -e 'enabled = true\n[private]\ndefaultSite = "local"' > extensions/site.ini
+	printf 'enabled = true\n[private]\ndefaultSite = "local"\n' > extensions/site.ini
 	# add site symlink
 	cd extensions/site/sites && ln -f -s ../../../site/ local
 	# disable community extensions because of some mysql errors
-	echo -e 'enabled = false' > extensions/community.ini
+	printf 'enabled = false\n' > extensions/community.ini
